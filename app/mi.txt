@@ -1,0 +1,39 @@
+<ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.logo}>LOGO</Text>
+      </View>
+      <Image source={require('../assets/progressbar5.png')} style={styles.progressbar} />
+
+      <Text style={styles.title}>Récapitulatif de votre parcours</Text>
+
+      {taskList.length > 0 ? (
+        <View style={styles.recapContainer}>
+          {taskList.map((task, index) => (
+            <Text key={index} style={styles.taskText}>• {task}</Text>
+          ))}
+        </View>
+      ) : (
+        <Text style={styles.taskText}>Aucune sélection trouvée</Text>
+      )}
+
+      <TouchableOpacity 
+        style={styles.button} 
+        onPress={generateAndSharePdf}
+        disabled={pdfLoading}
+      >
+        <Text style={styles.buttonText}>{pdfLoading ? "Génération..." : "Recevoir le PDF"}</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.returnButton} onPress={() => router.back()}>
+        <Text style={styles.returnButtonText}>Retour</Text>
+      </TouchableOpacity>
+
+      <View style={styles.characterContainer}>
+        <Image source={require('../assets/shivacompetence.png')} style={styles.characterImage} />
+      </View>
+      <View style={styles.bottomNav}>
+            <TouchableOpacity onPress={() => router.push('/HomeScreen')}><Ionicons name="home-outline" size={30} color="#5e00ff" /></TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push('/metiers')}><Ionicons name="search-outline" size={30} color="#5e00ff" /></TouchableOpacity>
+            <TouchableOpacity><Ionicons name="person-outline" size={30} color="#5e00ff" /></TouchableOpacity>
+        </View>
+    </ScrollView>

@@ -1,0 +1,93 @@
+"Développement & Programmation ": [
+      "Développeur Front-end",
+      "Développeur Back-end",
+      "Développeur Full-stack",
+      "Développeur Mobile",
+      "Ingénieur DevOps",
+      "Développeur Web3/Blockchain",
+      "Architecte Logiciel",
+      "Développeur API"
+    ],
+    "Data & Intelligence Artificielle ": [
+      "Data Scientist",
+      "Data Analyst",
+      "Ingénieur en Machine Learning",
+      "Data Engineer"
+    ],
+    "Cybersécurité": [
+      "Analyste en cybersécurité",
+      "Pentester (hacker éthique)",
+      "Ingénieur en sécurité informatique",
+      "Responsable de la conformité RGPD",
+      "Ingénieur en cybersécurité",
+      "Analyste SOC",
+      "Administrateur Systèmes & Réseaux"
+
+    ],
+    "Cloud & Infrastructure": [
+      "Architecte Cloud",
+      "Ingénieur en virtualisation",
+      
+    ],
+    "Marketing Digital & Growth Hacking": [
+      "SEO/SEA Manager",
+      "Traffic Manager",
+      "Web Analyst",
+      "Growth Hacker",
+      "CRM Manager",
+      "Digital Marketing Manager",
+      "E-commerce Manager",
+      "Community Manager"
+    ],
+    "Design & Expérience Utilisateur (UX/UI) ": [
+      "UI Designer",
+      "UX Designer",
+      "Motion Designer"
+      
+    ],
+    "Gestion de projets & Innovation ": [
+      "Chef de projet digital",
+      "Product Owner",
+      "Scrum Master"
+      
+    ],
+    "Jeux Vidéo & Réalité Virtuelle": [
+      "Game Developer",
+      "Game Designer",
+      "Développeur VR/AR"
+      
+    ],
+    "Entrepreneuriat & Startups (French Tech) ": [
+      "Startup Founder",
+      "Business Developer",
+      "Responsable levée de fonds"
+      
+    ],
+    "Télécommunications & Satellite": [
+      "Ingénieur Réseaux et Télécom",
+      "Ingénieur Spatial"
+    ],
+    "Ressources Humaines (RH)": [
+      "Responsable RH / HR Business",
+      "Talent Acquisition Manager / Chargé de recrutement",
+      "People Analyst / HR Data Analyst",
+      "Responsable Formation",
+      "Chargé de la paie et de l'administration du personnel",
+      "Responsable Marque Employeur"
+    ],
+    "Communication & Relations Publiques": [
+      "Responsable Communication",
+      "Social Media Manager",
+      "Content Manager / Rédacteur Web",
+      "Responsable Relations Presse (RP)",
+      "Brand Manager"
+    ],
+    "Commerce & Business Development": [
+      "Business Developer (B2B/B2C)",
+      "Key Account Manager",
+      "Category Manager",
+      "Responsable Partenariats",
+      "Responsable des ventes"
+    ]
+    
+  };

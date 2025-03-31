@@ -1,0 +1,394 @@
+import React, { useState } from 'react';
+import { View, Text, Button, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import { Checkbox } from 'react-native-paper';
+import { FlatList } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+
+const MetiersScreen: React.FC = () => {
+  // On autorise selectedJob à être null pour correspondre à la valeur du Picker
+  const [selectedJob, setSelectedJob] = useState<string | null>('Développeur web');
+  const [missions, setMissions] = useState<string[]>([]);
+  const [selectedMission, setSelectedMission] = useState('');
+  const [tasks, setTasks] = useState<string[]>([]);
+  const [selectedTasks, setSelectedTasks] = useState<{ [key: string]: boolean }>({});
+  const [competencies, setCompetencies] = useState<string[]>([]);
+  const [loadingMissions, setLoadingMissions] = useState(false);
+  const [loadingTasks, setLoadingTasks] = useState(false);
+  const [loadingCompetencies, setLoadingCompetencies] = useState(false);
+  const router = useRouter();
+
+  
+
+  const jobCategories = {
+    "Numérique": [
+      "Programmation informatique",
+      "Conseil en systèmes et logiciels informatiques",
+      "Tierce maintenance de systèmes et d'applications informatiques​",
+      "Gestion d'installations informatiques",
+      "Traitement de données, hébergement et activités connexes",
+      "Portails internet"
+    ],
+    "Ingénierie": [
+      "Ingénierie, études techniques",
+      "Analyses, essais et inspections techniques",
+      "Activités spécialisées, scientifiques et techniques diverses"
+    ],
+    "Conseil": [
+      "Conseil en relations publiques et communication",
+      "Conseil pour les affaires et autres conseils de gestion",
+      "Études de marché et sondages",
+      "Activités des agences de placement de main-d'œuvre",
+      "Autre mise à disposition de ressources humaines"
+    ],
+    "Événementiel": [
+      "Organisation de foires, salons professionnels et congrès",
+      "Gestion de salles de spectacles",
+      
+    ],
+    "Traduction et interprétation": [
+      "Traduction et intérprétation"
+    ]
+  };
+
+
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const availableJobs = selectedCategory ? jobCategories[selectedCategory] : [];
+
+  const fetchMissions = async () => {
+    setLoadingMissions(true);
+    try {
+      const response = await fetch('http://10.0.2.2:3000/chatbot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: `Fais-moi une liste d'au moins 6 missions concises et claires du métier ${selectedJob} selon la cartographie des métiers de la fédération Syntec. Chaque mission doit être formulée en une phrase courte et complète, sans erreurs de génération.`
+        })
+      });
+      const data = await response.json();
+      let missionList = data.response
+        ? data.response
+            .split('\n')
+            .map(item => item.trim())
+            .filter(item => item !== '')
+        : [];
+
+      while (missionList.length < 6) {
+        missionList.push(`Mission supplémentaire ${missionList.length + 1}`);
+      }
+
+      setMissions(missionList);
+      setTasks([]);
+      setSelectedTasks({});
+    } catch (error) {
+      console.error('Erreur de communication:', error);
+      setMissions([]);
+    }
+    setLoadingMissions(false);
+  };
+
+  const fetchTasks = async () => {
+    if (!selectedMission) return;
+    setLoadingTasks(true);
+    try {
+      const response = await fetch('http://10.0.2.2:3000/chatbot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: `Liste-moi les tâches associées à la mission '${selectedMission}' en utilisant des phrases courtes et concises. Chaque tâche doit être complète et ne pas être trop longue.`
+        })
+      });
+      const data = await response.json();
+      const taskList = data.response
+        ? data.response
+            .split('\n')
+            .map(item => item.trim())
+            .filter(item => item !== '')
+        : [];
+      setTasks(taskList);
+      setSelectedTasks(taskList.reduce((acc, task) => ({ ...acc, [task]: false }), {}));
+    } catch (error) {
+      console.error('Erreur de communication:', error);
+      setTasks([]);
+    }
+    setLoadingTasks(false);
+  };
+
+  const fetchCompetencies = async () => {
+    setLoadingCompetencies(true);
+    const selectedTaskNames = Object.keys(selectedTasks).filter(task => selectedTasks[task]);
+    if (selectedTaskNames.length === 0) {
+      setLoadingCompetencies(false);
+      return;
+    }
+    try {
+      const response = await fetch('http://10.0.2.2:3000/chatbot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: `Donne-moi les compétences techniques requises pour ces tâches: ${selectedTaskNames.join(
+            ', '
+          )}. Assure-toi que chaque compétence soit formulée en une phrase complète et concise.`
+        })
+      });
+      const data = await response.json();
+      let competenciesList = data.response
+        ? data.response
+            .split('\n')
+            .map(item => item.trim())
+            .filter(item => item !== '')
+        : [];
+
+      competenciesList = competenciesList.map(comp => {
+        if (comp && !/[.!?]$/.test(comp)) {
+          return comp + '.';
+        }
+        return comp;
+      });
+
+      setCompetencies(competenciesList);
+    } catch (error) {
+      console.error('Erreur de communication:', error);
+      setCompetencies([]);
+    }
+    setLoadingCompetencies(false);
+  };
+
+  const toggleTaskSelection = (task: string) => {
+    setSelectedTasks(prev => ({ ...prev, [task]: !prev[task] }));
+  };
+
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.logo}>LOGO</Text>
+      </View>
+      <Text style={styles.title}>Choose your profession</Text>
+
+      {/* Sélection de la catégorie */}
+      <View style={styles.dropdownContainer}>
+        <Picker
+          selectedValue={selectedCategory}
+          onValueChange={(itemValue) => {
+            setSelectedCategory(itemValue);
+            setSelectedJob(null);
+          }}
+          style={styles.picker}
+        >
+          <Picker.Item label="Choose the categorie" value={null} />
+          {Object.keys(jobCategories).map((category, index) => (
+            <Picker.Item key={index} label={category} value={category} />
+          ))}
+        </Picker>
+      </View>
+
+      {/* Sélection du métier en fonction de la catégorie */}
+      {selectedCategory && (
+        <>
+          <View style={styles.dropdownContainer}>
+        <Picker
+          selectedValue={selectedJob}
+          onValueChange={itemValue => setSelectedJob(itemValue)}
+          style={styles.picker}
+          enabled={!!selectedCategory}
+        >
+          <Picker.Item label="..." value={null} />
+          {availableJobs.map((job, index) => (
+            <Picker.Item key={index} label={job} value={job} />
+          ))}
+        </Picker>
+      </View>
+        </>
+      )}
+      <TouchableOpacity
+  style={styles.button}
+  onPress={async () => {
+    await fetchMissions(); // ✅ Attendre le chargement des missions avant la navigation
+    router.push({
+      pathname: "/mission",
+      params: { missions: JSON.stringify(missions) },
+    });
+  }}
+>
+  <Text style={styles.buttonText}>Submit</Text>
+</TouchableOpacity>
+
+      <Image source={require('../assets/shiva_worker.png')} style={styles.illustration} />
+
+      <View style={styles.bottomNav}>
+        <TouchableOpacity>
+          <Ionicons name="home-outline" size={30} color="#5e00ff" />
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Ionicons name="search-outline" size={30} color="#5e00ff" />
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Ionicons name="person-outline" size={30} color="#5e00ff" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Affichage des missions 
+      {missions.length > 0 && (
+        <>
+          <Text style={styles.label}>Missions :</Text>
+          <Picker
+            selectedValue={selectedMission}
+            onValueChange={itemValue => setSelectedMission(itemValue)}
+          >
+            {missions.map((mission, index) => (
+              <Picker.Item key={index} label={mission} value={mission} />
+            ))}
+          </Picker>
+          <View style={styles.buttonContainer}>
+            <Button
+              title={loadingTasks ? 'Chargement...' : 'Obtenir tâches'}
+              onPress={fetchTasks}
+              disabled={loadingTasks}
+            />
+          </View>
+        </>
+      )} */}
+
+      {/* Affichage des tâches 
+      {tasks.length > 0 && (
+        <>
+          <Text style={styles.label}>Tâches :</Text>
+          <FlatList
+            data={tasks}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <View style={styles.taskContainer}>
+                <Checkbox
+                  status={selectedTasks[item] ? 'checked' : 'unchecked'}
+                  onPress={() => toggleTaskSelection(item)}
+                />
+                <Text style={styles.taskText}>{item}</Text>
+              </View>
+            )}
+          />
+          <View style={styles.buttonContainer}>
+            <Button title="Valider les tâches" onPress={fetchCompetencies} />
+          </View>
+        </>
+      )} */}
+
+      {/* Affichage des compétences 
+      {competencies.length > 0 && (
+        <>
+          <Text style={styles.label}>Compétences techniques :</Text>
+          {competencies.map((comp, index) => (
+            <Text key={index} style={styles.competencyText}>
+              {comp}
+            </Text>
+          ))}
+        </>
+      )} */}
+    </ScrollView>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+  },
+  title: {
+    fontSize: 24, 
+    fontWeight: 'bold',
+    color: '#5e00ff',
+    marginVertical: 20,
+    textAlign: 'center',
+  },
+  dropdownContainer: {
+    width: '85%',
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 25, // Arrondi amélioré
+    marginVertical: 10,
+    paddingHorizontal: 10,
+    height: 50,
+    justifyContent: 'center',
+  },
+  picker: {
+    width: '100%',
+    height: 50,
+  },
+  button: {
+    backgroundColor: '#5e00ff',
+    paddingVertical: 14,
+    paddingHorizontal: 40,
+    borderRadius: 30, 
+    marginVertical: 20,
+    alignSelf: 'center',
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    textAlign: 'center',
+  },
+  illustration: {
+    width: 190, 
+    height: 190,
+    marginTop: 450,
+    right: 20,
+    resizeMode: 'contain',
+    position: 'absolute',
+  },
+  bottomNav: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    height: 60,
+    backgroundColor: '#ffffff',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: '#ccc',
+  },
+  header: {
+    backgroundColor: '#5e00ff',
+    width: '100%',
+    height: 70,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+  },
+  label: {
+    fontSize: 16,
+    marginVertical: 10
+  },
+  
+  taskContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 5,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc'
+  },
+  taskText: {
+    flex: 1,
+    fontSize: 14,
+    marginLeft: 10
+  },
+  logo: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  competencyText: {
+    fontSize: 14,
+    paddingVertical: 5
+  },
+  buttonContainer: {
+    marginVertical: 10
+  }
+});
+
+export default MetiersScreen;
