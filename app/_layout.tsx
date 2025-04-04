@@ -4,8 +4,10 @@ import * as Font from 'expo-font';
 import { View, Image, StyleSheet } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 
+//ecran lancement appli
 SplashScreen.preventAutoHideAsync();
 
+// ajout police plus router une fois le chargement terminé ça envoie sur la page welcome
 export default function Layout() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const router = useRouter();
@@ -41,7 +43,7 @@ export default function Layout() {
     <Stack
       screenOptions={{
         headerShown: false,
-        animation: 'fade_from_bottom', // 💫 Animation fluide entre les pages
+        animation: 'fade_from_bottom', 
       }}
     >
       <Stack.Screen name="WelcomeScreen" options={{ animation: 'none' }} />

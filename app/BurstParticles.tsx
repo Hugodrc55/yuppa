@@ -1,14 +1,12 @@
+// fichier qui permet de faire une petite anim de particule quand on coche une case
 import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, {
-  Easing,
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, {Easing, useSharedValue, useAnimatedStyle, withTiming} from 'react-native-reanimated';
 
-const colors = ['#5e00ff', '#8a2be2', '#00ffcc']; // Palette Yuppa
+//couleur yupa
+const colors = ['#5e00ff', '#8a2be2', '#00ffcc']; 
 
+//nombre 
 const TOTAL_PARTICLES = 12;
 
 const randomBetween = (min: number, max: number) => Math.random() * (max - min) + min;
@@ -20,6 +18,7 @@ const Circle = ({ index }: { index: number }) => {
   const scale = useSharedValue(0.5);
   const rotate = useSharedValue(0);
 
+  //taille
   const size = randomBetween(6, 12);
 
   useEffect(() => {
@@ -35,7 +34,7 @@ const Circle = ({ index }: { index: number }) => {
       duration: 800,
       easing: Easing.out(Easing.exp),
     });
-
+    
     scale.value = withTiming(1.3, {
       duration: 300,
       easing: Easing.out(Easing.ease),

@@ -1,3 +1,4 @@
+//Fichier qui permet de récuperer la base supabase
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = 'https://mtnufiklwdvzelsfohzu.supabase.co';

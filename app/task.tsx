@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Image, findNodeHandle, UIManager } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Image, findNodeHandle, UIManager, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Checkbox } from 'react-native-paper';
 import BurstParticles from './BurstParticles';
 import { Audio } from 'expo-av';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { playSound } from './useSound';
+
 
 function TaskScreen() {
   return (
@@ -84,17 +87,21 @@ const TaskComponent: React.FC = () => {
 
       setTasksByMission(newTasksByMission);
       setLoading(false);
+      
     };
 
     fetchTasks();
   }, [selectedMissions]);
+  useEffect(() => {
+    playSound(); 
+  }, []);
 
   return (
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.logo}>LOGO</Text>
-        </View>
+        <SafeAreaView style={styles.header}>
+          <Text style={styles.logo}>YUPA</Text>
+        </SafeAreaView>
 
         <Image source={require('../assets/progressbar3.png')} style={styles.progressbar} />
         <Text style={styles.title}>Sélectionnez des tâches</Text>
@@ -141,7 +148,7 @@ const TaskComponent: React.FC = () => {
             });
           }}
         >
-          <Text style={styles.buttonText}>Voir les compétences</Text>
+          <Text style={styles.buttonText}>Soumettre</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.returnButton} onPress={() => router.back()}>
@@ -193,16 +200,17 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: '#5e00ff',
     width: '100%',
-    height: 70,
+    paddingVertical: Platform.OS === 'ios' ? 10 : 40,
     alignItems: 'center',
-    justifyContent: 'center',
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
   },
   logo: {
-    fontSize: 24,
+    paddingTop: Platform.OS === 'ios' ? 55 : 25,
+    color: 'white',
+    fontSize: Platform.OS === 'ios' ? 28 : 24,
     fontFamily: 'LilitaOne-Regular',
-    color: '#ffffff'
+    position: 'absolute'
   },
   title: {
     fontSize: 24,
@@ -238,10 +246,10 @@ const styles = StyleSheet.create({
     flexShrink: 1
   },
   progressbar: {
-    width: 690,
-    height: 80,
+    width: Platform.OS === 'ios' ? 710 : 690, 
+    height: Platform.OS === 'ios' ? 95 : 80, 
     marginTop: -10,
-    resizeMode: 'contain'
+    resizeMode: 'contain',
   },
   button: {
     backgroundColor: '#5e00ff',
@@ -283,14 +291,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     width: '100%',
-    height: 60,
+    height: Platform.OS === 'ios' ? 80 : 60,
     backgroundColor: '#ffffff',
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
     borderTopWidth: 1,
-    borderTopColor: '#ccc'
-  }
+    borderTopColor: '#ccc',
+      },
 });
 
 export default TaskScreen;

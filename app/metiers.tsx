@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Platform } from 'react-native';
 import { useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+//Composant qui permet le menu deroulant
 import { Dropdown } from 'react-native-element-dropdown';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 function MetiersScreen() {
   return (
@@ -16,9 +18,8 @@ function MetiersScreen() {
 const MetiersComponent: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedJob, setSelectedJob] = useState<string | null>(null);
-  const [loadingMissions, setLoadingMissions] = useState(false);
   const router = useRouter();
-
+  // Liste métier par catégorie
   const jobCategories: { [key: string]: string[] } = {
     "Développement & Programmation ": [
       "Développeur Front-end",
@@ -119,38 +120,27 @@ const MetiersComponent: React.FC = () => {
     ? jobCategories[selectedCategory].map(job => ({ label: job, value: job }))
     : [];
 
-  const handleSubmit = async () => {
-    if (!selectedJob) return alert("Veuillez choisir un métier.");
-
-    setLoadingMissions(true);
-    try {
-      const response = await fetch('https://backend-fryj.onrender.com/chatbot', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: `Fais-moi une liste d'au moins 6 missions concises et claires du métier ${selectedJob}.`
-        })
-      });
-
-      const data = await response.json();
-      const missions = data.response?.split('\n').map((item: string) => item.trim()).filter(Boolean) || [];
-
+    const handleSubmit = () => {
+      if (!selectedJob) {
+        alert("Veuillez choisir un métier.");
+        return;
+      }
+    
       router.push({
         pathname: '/mission',
         params: {
-          missions: JSON.stringify(missions),
           selectedJob,
         },
       });
-    } catch (error) {
-      console.error("Erreur:", error);
-    }
-    setLoadingMissions(false);
-  };
+    };
+    
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.header}><Text style={styles.logo}>YUPPA</Text></View>
+      <SafeAreaView style={styles.header}>
+        <Text style={styles.logo}>YUPA</Text>
+      </SafeAreaView>
+
       <Image source={require('../assets/progressbar1.png')} style={styles.progressbar} />
       <Text style={styles.title}>Choisissez le métier</Text>
 
@@ -190,9 +180,7 @@ const MetiersComponent: React.FC = () => {
       )}
 
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>
-          {loadingMissions ? "Chargement..." : "Soumettre"}
-        </Text>
+        <Text style={styles.buttonText}>Soumettre</Text>
       </TouchableOpacity>
 
       <Image source={require('../assets/shiva_worker.png')} style={styles.illustration} />
@@ -213,34 +201,32 @@ const MetiersComponent: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { 
-    flexGrow: 1, 
-    alignItems: 'center', 
-    backgroundColor: '#fff' 
-  },
+  container: { flexGrow: 1, alignItems: 'center', backgroundColor: '#fff' },
   header: {
-    backgroundColor: '#5e00ff', 
-    height: 70, 
+    backgroundColor: '#5e00ff',
     width: '100%',
-    justifyContent: 'center', 
+    paddingVertical: Platform.OS === 'ios' ? 10 : 40,
     alignItems: 'center',
-    borderBottomLeftRadius: 10, 
-    borderBottomRightRadius: 10
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
   },
-  logo: { fontSize: 24, 
-    fontFamily: 'LilitaOne-Regular', 
-    color: '#fff' 
+  logo: {
+    paddingTop: Platform.OS === 'ios' ? 55 : 25,
+    color: 'white',
+    fontSize: Platform.OS === 'ios' ? 28 : 24,
+    fontFamily: 'LilitaOne-Regular',
+    position: 'absolute',
   },
   title: {
-    fontSize: 24, 
+    fontSize: Platform.OS === 'ios' ? 28 : 24,
     fontFamily: 'LilitaOne-Regular',
-    color: '#5e00ff', 
-    marginVertical: 20, 
+    color: '#5e00ff',
+    marginVertical: 20,
     textAlign: 'center',
   },
   dropdown: {
     width: '85%',
-    height: 55,
+    height: Platform.OS === 'ios' ? 65 : 55,
     backgroundColor: '#ffffff',
     borderRadius: 25,
     paddingHorizontal: 20,
@@ -254,49 +240,48 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   dropdownText: {
-    fontSize: 16,
+    fontSize: Platform.OS === 'ios' ? 20 : 16,
     fontFamily: 'LeagueSpartan-Regular',
     color: '#333',
   },
-  
   button: {
-    backgroundColor: '#5e00ff', 
-    paddingVertical: 14,
-    paddingHorizontal: 40, 
+    backgroundColor: '#5e00ff',
+    paddingVertical: Platform.OS === 'ios' ? 18 : 14,
+    paddingHorizontal: Platform.OS === 'ios' ? 44 : 40,
     borderRadius: 30,
-    marginVertical: 20, 
+    marginVertical: 20,
     alignSelf: 'center',
   },
   buttonText: {
-    fontSize: 16, 
+    fontSize: Platform.OS === 'ios' ? 20 : 16,
     fontFamily: 'LilitaOne-Regular',
-    color: '#fff', 
+    color: '#fff',
     textAlign: 'center',
   },
   illustration: {
-    width: 190, 
-    height: 190, 
-    marginTop: 450,
-    resizeMode: 'contain', 
+    width: Platform.OS === 'ios' ? 230 : 190,
+    height: Platform.OS === 'ios' ? 230 : 190,
+    marginTop: Platform.OS === 'ios' ? 550 : 450,
+    resizeMode: 'contain',
     position: 'absolute',
     right: 20,
   },
   progressbar: {
-    width: 690, 
-    height: 80, 
+    width: Platform.OS === 'ios' ? 710 : 690,
+    height: Platform.OS === 'ios' ? 95 : 80,
     marginTop: -10,
     resizeMode: 'contain',
   },
   bottomNav: {
-    position: 'absolute', 
-    bottom: 0, 
-    width: '100%', 
-    height: 60,
-    backgroundColor: '#fff', 
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    height: Platform.OS === 'ios' ? 80 : 60,
+    backgroundColor: '#ffffff',
     flexDirection: 'row',
-    justifyContent: 'space-around', 
+    justifyContent: 'space-around',
     alignItems: 'center',
-    borderTopWidth: 1, 
+    borderTopWidth: 1,
     borderTopColor: '#ccc',
   },
 });

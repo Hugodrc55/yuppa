@@ -1,3 +1,4 @@
+//Theme dark mais pas fonctionnel pour l'instant
 import { useColorScheme } from 'react-native';
 
 export const useAppTheme = () => {

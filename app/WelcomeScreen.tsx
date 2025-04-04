@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Platform } from 'react-native';
 import { useRouter, Stack } from 'expo-router';
 import * as Animatable from 'react-native-animatable';
 
+//illustration alternative
 const images = [
   require('../assets/shivawelcome.png'),
-  require('../assets/shiva2.png'), // Ton image alternative
+  require('../assets/shiva2.png'), 
+  
 ];
 
 export default function WelcomeScreen() {
@@ -45,14 +47,14 @@ export default function WelcomeScreen() {
           />
         )}
 
-        <Text style={styles.title}>Yuppa</Text>
+        <Text style={styles.title}>Yupa</Text>
 
         <View style={styles.card}>
-          <Text style={styles.welcome}>Welcome to Yuppa</Text>
+          <Text style={styles.welcome}>Welcome to Yupa</Text>
           <Text style={styles.description}>
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Deleniti corporis nostrum pariatur.
           </Text>
-
+          
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.registerButton}>
               <Text style={styles.registerButtonText}>Register {'>'}</Text>
@@ -75,19 +77,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
     backgroundColor: '#ffffff',
-    paddingTop: 80, 
+    paddingTop: Platform.OS === 'ios' ? 120 : 80, 
   },
   image: {
-    width: 400,
-    height: 400,
+    width: Platform.OS == 'ios' ? 500 : 400,
+    height: Platform.OS == 'ios' ? 500: 400,
     resizeMode: 'contain',
     marginBottom: 20,
   },
   title: {
-    fontSize: 30,
+    fontSize: Platform.OS == 'ios' ? 36 : 30,
     color: '#5e00ff',
     fontFamily: 'LilitaOne-Regular',
-    marginTop: 430, 
+    marginTop: Platform.OS == 'ios' ? 580 : 430, 
     position: 'absolute'
   },
   card: {
@@ -95,13 +97,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#5e00ff',
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
-    padding: 30,
+    padding: Platform.OS == 'ios' ? 50 : 30,
     alignItems: 'center',
     position: 'absolute',
     bottom: 0,
   },
   welcome: {
-    fontSize: 25,
+    fontSize: Platform.OS == 'ios' ? 30 : 25,
     fontFamily: 'LilitaOne-Regular',
     color: '#fff',
     textAlign: 'center',
@@ -119,8 +121,8 @@ const styles = StyleSheet.create({
   },
   registerButton: {
     backgroundColor: '#ffffff',
-    paddingHorizontal: 20,
-    paddingVertical: 8,
+    paddingHorizontal: Platform.OS == 'ios' ? 25 : 20,
+    paddingVertical: Platform.OS == 'ios' ? 12 : 8,
     borderRadius: 20,
     borderWidth: 2,
     borderColor: '#ffffff',
@@ -134,8 +136,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderWidth: 2,
     borderColor: '#ffffff',
-    paddingHorizontal: 20,
-    paddingVertical: 8,
+    paddingHorizontal: Platform.OS == 'ios' ? 25 : 20,
+    paddingVertical: Platform.OS == 'ios' ? 12 : 8,
     borderRadius: 20,
   },
   buttonText: {

@@ -1,6 +1,7 @@
+//composant permettant le sons
 import { Audio } from 'expo-av';
 
-// Son de changement de page
+
 export const playSound = async () => {
   try {
     const { sound } = await Audio.Sound.createAsync(
@@ -38,7 +39,7 @@ export const playFinishSound = async () => {
   }
 };
 
-// ✅ Son lorsqu’on coche une case
+
 export const playPopClick = async () => {
   try {
     const { sound } = await Audio.Sound.createAsync(
